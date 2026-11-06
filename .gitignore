@@ -5,3 +5,8 @@ __pycache__/
 *.log
 benchmark*.json
 docs/.sam-index.json
+sam-memory.sqlite3
+build/
+dist/
+*.spec.bak
+*.egg-info/

@@ -7,7 +7,7 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
 MAX_TOOL_ROUNDS = 4
 MAX_MESSAGES = 40
 TOOL_INTENT_PATTERN = re.compile(
-    r"\b(screen|screenshot|visible|see|document|docs|file|notes|knowledge|search|open|launch|start|type|write|enter|fill|calculator|notepad|paint)\b",
+    r"\b(screen|screenshot|visible|see|document|docs|file|notes|knowledge|search|open|launch|start|type|write|enter|fill|calculator|notepad|paint|remember|recall|memory|voice|microphone|record|transcribe)\b",
     re.IGNORECASE,
 )
 

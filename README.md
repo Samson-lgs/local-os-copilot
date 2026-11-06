@@ -240,11 +240,15 @@ Sam has a local trust boundary and several execution controls:
 - Conversation history is bounded in memory.
 - Tool results include success/failure status and duration.
 - Conversation export is manual and writes only to a user-selected local path.
+- Voice recording and transcription are local and optional.
+- The RAG index can watch the `docs/` folder for changes.
+- The web UI provides a screenshot preview and selectable region OCR.
+- Preferences and approved facts can be stored in local SQLite memory.
 
 Important limitations:
 
 - `type_text` operates on whichever window currently has focus.
-- The current release does not implement voice input or output.
+- Voice input requires a working microphone and downloads the Whisper model locally on first use.
 - The current release does not provide arbitrary shell access.
 - Exported conversations are plain text.
 - Users should review tool activity before allowing desktop actions.
@@ -301,6 +305,35 @@ The benchmark records:
 
 The benchmark never executes desktop tools or sends data to a remote endpoint.
 
+## Enhanced JavaScript Frontend
+
+Sam also includes a browser-based local workspace with a modern agent layout, live runtime status, chat, tool trace, screenshot preview, region OCR, voice input, conversation export, and responsive mobile styling.
+
+Start it with:
+
+```powershell
+python -m src.server
+```
+
+Open:
+
+```text
+http://127.0.0.1:8765
+```
+
+The server binds to loopback only. The frontend communicates with the Python API over the local machine and does not use a cloud backend.
+
+## Windows Executable Packaging
+
+Install development tools and build the desktop executable:
+
+```powershell
+pip install -e ".[dev]"
+.\build.ps1
+```
+
+The packaged executable is generated as `dist\Sam.exe`. Ollama and its local models remain separate prerequisites because they are runtime services rather than bundled application code.
+
 ## Repository Structure
 
 ```text
@@ -309,29 +342,44 @@ local-os-copilot/
 |-- docs/                          Local RAG knowledge base
 |-- src/
 |   |-- benchmark.py                Local model benchmark
+|   |-- audio.py                    Local recording and Whisper transcription
 |   |-- executor.py                 Shared validated tool executor
 |   |-- main.py                     CLI and Ollama orchestration
+|   |-- memory.py                   Local SQLite memory
 |   |-- rag.py                      Local document indexing and retrieval
+|   |-- server.py                   Loopback API and web frontend server
 |   |-- settings.py                 Endpoint, intent, and history policy
 |   |-- tools.py                    Windows tools and input limits
 |   |-- ui.py                       Tkinter agent workspace
 |   |-- vision.py                   Screen capture and OCR
+|-- web/                            JavaScript frontend, CSS, and HTML
+|-- LICENSE                         MIT License
+|-- Sam.spec                        PyInstaller Windows build specification
+|-- build.ps1                       Reproducible packaging script
 |-- tests/                          Deterministic unit tests
 |-- pyproject.toml                  Metadata and development configuration
 |-- requirements.txt                Runtime dependencies
 |-- README.md                       Project documentation
 ```
+Use this short explanation in an interview:
 
+> Sam is a privacy-first Windows desktop copilot that runs entirely against local Ollama models. I built a shared tool-execution layer so both the CLI and Tkinter UI use the same validated actions. The model can call local tools for screen OCR, allowlisted application launching, focused-window typing, and document retrieval. For RAG, documents are parsed locally, split into overlapping chunks, embedded with a local Ollama embedding model, and searched with cosine similarity. Retrieved results include source citations, including PDF page numbers. I also added loopback endpoint enforcement, bounded conversation history, tool intent gating, execution timing, automated tests, linting, and Windows CI.
 
+## Resume Bullets
+
+- Built a privacy-first Windows desktop copilot using local Ollama models, Tkinter, screen OCR, validated OS tools, and bounded function-calling orchestration.
+- Implemented local RAG over Markdown, text, Python, JSON, RST, PDF, and DOCX files using Ollama embeddings, cosine retrieval, persisted indexing, and source citations with PDF page numbers.
+- Designed a shared tool executor with Windows application allowlisting, argument validation, loopback endpoint enforcement, intent-gated tool exposure, execution timing, and bounded conversation history.
+- Added a reproducible local-model benchmark, 30 automated tests, Ruff linting, Windows GitHub Actions CI, and a PyInstaller packaging path.
 
 ## Future Work
 
-- Push-to-talk local Whisper voice input
-- Incremental file watching and index rebuilds
-- Screenshot preview and selectable OCR regions
-- Local SQLite preferences and memory
-- Windows executable packaging
+- Incremental index rebuilds based on file hashes rather than full rebuilds
+- PDF citation links that open directly at the cited page
+- Local text-to-speech output
+- More Windows window-management tools with explicit policy controls
+- Signed installer and release artifacts
 
 ## License
 
-This project is currently intended as a personal portfolio project. Add a license before redistributing it publicly.
+Released under the [MIT License](LICENSE). You may use, modify, and redistribute the project under its terms.

@@ -10,7 +10,11 @@ TOOLS_SCHEMA = [
     {"type": "function", "function": {"name": "open_application", "description": "Open a desktop application by name.", "parameters": {"type": "object", "properties": {"app_name": {"type": "string"}}, "required": ["app_name"]}}},
     {"type": "function", "function": {"name": "type_text", "description": "Type text into the currently focused local window.", "parameters": {"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]}}},
     {"type": "function", "function": {"name": "read_screen", "description": "Capture the primary screen and extract visible text locally.", "parameters": {"type": "object", "properties": {}}}},
+    {"type": "function", "function": {"name": "read_screen_region", "description": "Extract text from a selected screen rectangle locally.", "parameters": {"type": "object", "properties": {"left": {"type": "integer"}, "top": {"type": "integer"}, "width": {"type": "integer"}, "height": {"type": "integer"}}, "required": ["left", "top", "width", "height"]}}},
     {"type": "function", "function": {"name": "search_documents", "description": "Search files in the local docs folder using embeddings. Use this for questions about project notes or documents. Do not use read_screen for document questions.", "parameters": {"type": "object", "properties": {"query": {"type": "string"}, "top_k": {"type": "integer", "minimum": 1, "maximum": 5}}, "required": ["query"]}}},
+    {"type": "function", "function": {"name": "remember", "description": "Save a user-approved preference or fact in local SQLite memory.", "parameters": {"type": "object", "properties": {"content": {"type": "string"}}, "required": ["content"]}}},
+    {"type": "function", "function": {"name": "recall_memory", "description": "Retrieve relevant facts from Sam's local SQLite memory.", "parameters": {"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer", "minimum": 1, "maximum": 10}}}}},
+    {"type": "function", "function": {"name": "record_and_transcribe", "description": "Record a short microphone clip and transcribe it locally with Whisper.", "parameters": {"type": "object", "properties": {"seconds": {"type": "integer", "minimum": 1, "maximum": 30}}, "required": []}}},
 ]
 CONFIRMATION_REQUIRED: set[str] = set()
 

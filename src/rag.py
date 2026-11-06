@@ -70,6 +70,7 @@ class LocalDocumentIndex:
         self.documents_dir = documents_dir
         self.index_path = index_path
         self.chunks: list[DocumentChunk] = []
+        self._observer = None
 
     def _load_saved(self) -> bool:
         if not self.index_path.exists():
@@ -114,6 +115,35 @@ class LocalDocumentIndex:
             f"Relevance: {score}\n{chunk.text}"
             for score, chunk in matches
         )
+
+    def start_watcher(self) -> bool:
+        """Watch the knowledge folder and rebuild after supported file changes."""
+        try:
+            from watchdog.events import FileSystemEventHandler
+            from watchdog.observers import Observer
+        except ImportError:
+            return False
+
+        index = self
+
+        class Handler(FileSystemEventHandler):
+            def on_created(self, event):
+                if not event.is_directory and Path(event.src_path).suffix.lower() in SUPPORTED_SUFFIXES:
+                    index.build()
+
+            on_modified = on_created
+
+        self.documents_dir.mkdir(parents=True, exist_ok=True)
+        self._observer = Observer()
+        self._observer.schedule(Handler(), str(self.documents_dir), recursive=True)
+        self._observer.start()
+        return True
+
+    def stop_watcher(self) -> None:
+        if self._observer:
+            self._observer.stop()
+            self._observer.join(timeout=2)
+            self._observer = None
 
 
 _client = ollama.Client(host=OLLAMA_HOST)

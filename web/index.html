@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sam | Private AI Workspace</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>.voice-button{background:#263743;color:#c5d5da;margin-right:6px;border:0;border-radius:7px;padding:8px 12px;cursor:pointer}.voice-button.recording{background:#653b3b;color:#ffd2c9}.region-button{width:100%;margin-top:8px}.preview img{cursor:crosshair}</style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">S</div><div><strong>Sam</strong><span>PRIVATE AI AGENT</span></div></div>
+      <button class="new-chat" id="newChat">+ New session</button>
+      <div class="side-section"><label>WORKSPACE</label><button class="side-link active">Conversation</button><button class="side-link" id="screenButton">Screen context</button><button class="side-link" id="knowledgeButton">Knowledge base</button></div>
+      <div class="runtime-card"><span class="eyebrow">LOCAL RUNTIME</span><div class="runtime-status"><i id="statusDot"></i><span id="statusText">Checking Ollama</span></div><small id="modelText">llama3.1</small></div>
+      <div class="privacy-note"><span>LOCAL ONLY</span><p>Models, documents, screenshots, and memory stay on this computer.</p></div>
+    </aside>
+    <main class="main-panel">
+      <header class="topbar"><div><span class="eyebrow">AGENT WORKSPACE</span><h1>What should Sam handle?</h1></div><div class="top-actions"><span class="session-pill" id="sessionId"></span><button class="icon-button" id="exportButton" title="Export conversation">Download</button></div></header>
+      <section class="workspace">
+        <div class="chat-column"><div class="welcome" id="welcome"><div class="welcome-icon">✦</div><h2>Local intelligence, clear boundaries.</h2><p>Ask about your files, your screen, or a small desktop task.</p><div class="suggestions"><button data-prompt="Search my local documents for the setup steps">Search documents</button><button data-prompt="Read my screen">Read screen</button><button data-prompt="Explain what is visible on my screen">Explain screen</button></div></div><div class="messages" id="messages"></div></div>
+        <aside class="trace-panel"><div class="panel-heading"><div><span class="eyebrow">LIVE TRACE</span><h3>Agent activity</h3></div><span class="phase" id="phase">READY</span></div><div class="trace-list" id="traceList"><div class="empty-trace">Sam's plan and tool results will appear here.</div></div><div class="screen-card"><div class="panel-heading"><h3>Screen preview</h3><button class="text-button" id="refreshScreen">Capture</button></div><div class="preview" id="preview"><span>Capture the screen when needed</span></div><button class="text-button region-button" id="regionButton" disabled>OCR selection</button></div></aside>
+      </section>
+      <footer class="composer"><div class="composer-box"><textarea id="messageInput" rows="1" placeholder="Message Sam..." autofocus></textarea><div class="composer-actions"><span>Local model · bounded tools</span><div><button class="voice-button" id="voiceButton">Push to talk</button><button class="send-button" id="sendButton">Send <kbd>Enter</kbd></button></div></div></div><p>Sam can read local context, retrieve documents, and execute approved local capabilities.</p></footer>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

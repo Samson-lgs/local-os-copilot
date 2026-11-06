@@ -3,9 +3,11 @@ import time
 from dataclasses import dataclass
 from typing import Any, Callable
 
+from src.audio import record_and_transcribe
+from src.memory import recall_memory, remember
 from src.rag import search_documents
 from src.tools import open_application, type_text
-from src.vision import read_screen
+from src.vision import read_screen, read_screen_region
 
 
 @dataclass(frozen=True)
@@ -20,7 +22,11 @@ AVAILABLE_FUNCTIONS: dict[str, Callable[..., str]] = {
     "open_application": open_application,
     "type_text": type_text,
     "read_screen": read_screen,
+    "read_screen_region": read_screen_region,
     "search_documents": search_documents,
+    "remember": remember,
+    "recall_memory": recall_memory,
+    "record_and_transcribe": record_and_transcribe,
 }
 
 

@@ -322,18 +322,7 @@ local-os-copilot/
 |-- README.md                       Project documentation
 ```
 
-## How to Explain This Project
 
-Use this short explanation in an interview:
-
-> Sam is a privacy-first Windows desktop copilot that runs entirely against local Ollama models. I built a shared tool-execution layer so both the CLI and Tkinter UI use the same validated actions. The model can call local tools for screen OCR, allowlisted application launching, focused-window typing, and document retrieval. For RAG, documents are parsed locally, split into overlapping chunks, embedded with a local Ollama embedding model, and searched with cosine similarity. Retrieved results include source citations, including PDF page numbers. I also added loopback endpoint enforcement, bounded conversation history, tool intent gating, execution timing, automated tests, linting, and Windows CI.
-
-## Resume Bullets
-
-- Built a privacy-first Windows desktop copilot using local Ollama models, Tkinter, screen OCR, validated OS tools, and bounded function-calling orchestration.
-- Implemented local RAG over Markdown, text, Python, JSON, RST, PDF, and DOCX files using Ollama embeddings, cosine retrieval, persisted indexing, and source citations with PDF page numbers.
-- Designed a shared tool executor with Windows application allowlisting, argument validation, loopback endpoint enforcement, intent-gated tool exposure, execution timing, and bounded conversation history.
-- Added a reproducible local-model benchmark, 27 automated tests, Ruff linting, and Windows GitHub Actions CI.
 
 ## Future Work
 

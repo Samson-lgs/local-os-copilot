@@ -29,6 +29,7 @@ class DocumentChunk:
     source: str
     text: str
     embedding: list[float]
+    page: int | None = None
 
 
 def _chunks(text: str, size: int = 900, overlap: int = 120) -> list[str]:
@@ -51,12 +52,16 @@ def _cosine(left: list[float], right: list[float]) -> float:
 
 
 def _read_document(path: Path) -> str:
+    return "\n".join(text for text, _ in _read_document_sections(path))
+
+
+def _read_document_sections(path: Path) -> list[tuple[str, int | None]]:
     if path.suffix.lower() == ".pdf":
-        return "\n".join(page.extract_text() or "" for page in PdfReader(str(path)).pages)
+        return [(page.extract_text() or "", page_number) for page_number, page in enumerate(PdfReader(str(path)).pages, 1)]
     if path.suffix.lower() == ".docx":
         document = Document(str(path))
-        return "\n".join(paragraph.text for paragraph in document.paragraphs)
-    return path.read_text(encoding="utf-8", errors="ignore")
+        return [("\n".join(paragraph.text for paragraph in document.paragraphs), None)]
+    return [(path.read_text(encoding="utf-8", errors="ignore"), None)]
 
 
 class LocalDocumentIndex:
@@ -82,9 +87,9 @@ class LocalDocumentIndex:
         for path in sorted(self.documents_dir.rglob("*")):
             if not path.is_file() or path.suffix.lower() not in SUPPORTED_SUFFIXES or path.name == self.index_path.name:
                 continue
-            text = _read_document(path)
-            for chunk in _chunks(text):
-                self.chunks.append(DocumentChunk(str(path), chunk, _embedding(self.client.embed(model=EMBED_MODEL, input=chunk))))
+            for text, page in _read_document_sections(path):
+                for chunk in _chunks(text):
+                    self.chunks.append(DocumentChunk(str(path), chunk, _embedding(self.client.embed(model=EMBED_MODEL, input=chunk)), page))
         self.index_path.write_text(json.dumps([asdict(chunk) for chunk in self.chunks]), encoding="utf-8")
         return len(self.chunks)
 
@@ -104,7 +109,11 @@ class LocalDocumentIndex:
         query_embedding = _embedding(self.client.embed(model=EMBED_MODEL, input=query))
         limit = max(1, min(requested_top_k, 5))
         matches = sorted(((round(_cosine(query_embedding, chunk.embedding), 4), chunk) for chunk in self.chunks), reverse=True, key=lambda item: item[0])[:limit]
-        return "\n\n".join(f"Source: {chunk.source}\nRelevance: {score}\n{chunk.text}" for score, chunk in matches)
+        return "\n\n".join(
+            f"Source: {chunk.source}{f' (page {chunk.page})' if chunk.page else ''}\n"
+            f"Relevance: {score}\n{chunk.text}"
+            for score, chunk in matches
+        )
 
 
 _client = ollama.Client(host=OLLAMA_HOST)

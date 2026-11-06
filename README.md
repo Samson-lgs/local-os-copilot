@@ -58,7 +58,7 @@ It records average response latency and exact tool-selection accuracy across an 
 
 ## Local RAG
 
-Sam supports retrieval-augmented generation over files in `docs/`. Add `.md`, `.txt`, `.py`, `.json`, `.rst`, `.pdf`, or `.docx` files, then ask Sam a question about them. Sam will call `search_documents`, extract text locally, create embeddings with `nomic-embed-text`, and return the most relevant chunks to the local chat model.
+Sam supports retrieval-augmented generation over files in `docs/`. Add `.md`, `.txt`, `.py`, `.json`, `.rst`, `.pdf`, or `.docx` files, then ask Sam a question about them. Sam will call `search_documents`, extract text locally, create embeddings with `nomic-embed-text`, and return the most relevant chunks to the local chat model with source citations. PDF citations include page numbers.
 
 ```powershell
 mkdir docs

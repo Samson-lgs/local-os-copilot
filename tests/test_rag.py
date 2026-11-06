@@ -4,7 +4,7 @@ import pytest
 from docx import Document
 from pypdf import PdfWriter
 
-from src.rag import LocalDocumentIndex, _chunks, _cosine, _read_document
+from src.rag import DocumentChunk, LocalDocumentIndex, _chunks, _cosine, _read_document, _read_document_sections
 
 
 class FakeEmbeddingClient:
@@ -67,3 +67,25 @@ def test_read_empty_pdf_returns_text_reader_result(tmp_path: Path):
         writer.write(output)
 
     assert _read_document(path) == ""
+
+
+def test_pdf_sections_keep_page_numbers(tmp_path: Path):
+    path = tmp_path / "brief.pdf"
+    writer = PdfWriter()
+    writer.add_blank_page(width=200, height=200)
+    writer.add_blank_page(width=200, height=200)
+    with path.open("wb") as output:
+        writer.write(output)
+
+    sections = _read_document_sections(path)
+
+    assert sections == [("", 1), ("", 2)]
+
+
+def test_search_formats_page_citation(tmp_path: Path):
+    index = LocalDocumentIndex(FakeEmbeddingClient(), tmp_path, tmp_path / ".index.json")
+    index.chunks = [DocumentChunk("brief.pdf", "Cited local context.", [1.0, 1.0], 4)]
+
+    result = index.search("context")
+
+    assert "Source: brief.pdf (page 4)" in result

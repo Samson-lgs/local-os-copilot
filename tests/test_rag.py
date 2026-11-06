@@ -1,8 +1,10 @@
 from pathlib import Path
 
 import pytest
+from docx import Document
+from pypdf import PdfWriter
 
-from src.rag import LocalDocumentIndex, _chunks, _cosine
+from src.rag import LocalDocumentIndex, _chunks, _cosine, _read_document
 
 
 class FakeEmbeddingClient:
@@ -46,3 +48,22 @@ def test_search_clamps_string_top_k_value(tmp_path: Path):
     result = index.search("retrieval", top_k="10")
 
     assert "Bounded retrieval result" in result
+
+
+def test_read_docx_extracts_paragraph_text(tmp_path: Path):
+    path = tmp_path / "brief.docx"
+    document = Document()
+    document.add_paragraph("Private DOCX knowledge.")
+    document.save(path)
+
+    assert _read_document(path) == "Private DOCX knowledge."
+
+
+def test_read_empty_pdf_returns_text_reader_result(tmp_path: Path):
+    path = tmp_path / "brief.pdf"
+    writer = PdfWriter()
+    writer.add_blank_page(width=200, height=200)
+    with path.open("wb") as output:
+        writer.write(output)
+
+    assert _read_document(path) == ""

@@ -8,13 +8,15 @@ from pathlib import Path
 from typing import Any, Protocol
 
 import ollama
+from docx import Document
+from pypdf import PdfReader
 
 from src.settings import OLLAMA_HOST, validate_local_endpoint
 
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
 DOCUMENTS_DIR = Path(os.getenv("SAM_DOCUMENTS_DIR", "docs"))
 INDEX_PATH = DOCUMENTS_DIR / ".sam-index.json"
-SUPPORTED_SUFFIXES = {".md", ".txt", ".py", ".json", ".rst"}
+SUPPORTED_SUFFIXES = {".md", ".txt", ".py", ".json", ".rst", ".pdf", ".docx"}
 
 
 class EmbeddingClient(Protocol):
@@ -48,6 +50,15 @@ def _cosine(left: list[float], right: list[float]) -> float:
     return sum(a * b for a, b in zip(left, right)) / denominator if denominator else 0.0
 
 
+def _read_document(path: Path) -> str:
+    if path.suffix.lower() == ".pdf":
+        return "\n".join(page.extract_text() or "" for page in PdfReader(str(path)).pages)
+    if path.suffix.lower() == ".docx":
+        document = Document(str(path))
+        return "\n".join(paragraph.text for paragraph in document.paragraphs)
+    return path.read_text(encoding="utf-8", errors="ignore")
+
+
 class LocalDocumentIndex:
     def __init__(self, client: EmbeddingClient, documents_dir: Path = DOCUMENTS_DIR, index_path: Path = INDEX_PATH):
         self.client = client
@@ -71,7 +82,7 @@ class LocalDocumentIndex:
         for path in sorted(self.documents_dir.rglob("*")):
             if not path.is_file() or path.suffix.lower() not in SUPPORTED_SUFFIXES or path.name == self.index_path.name:
                 continue
-            text = path.read_text(encoding="utf-8", errors="ignore")
+            text = _read_document(path)
             for chunk in _chunks(text):
                 self.chunks.append(DocumentChunk(str(path), chunk, _embedding(self.client.embed(model=EMBED_MODEL, input=chunk))))
         self.index_path.write_text(json.dumps([asdict(chunk) for chunk in self.chunks]), encoding="utf-8")
@@ -85,7 +96,7 @@ class LocalDocumentIndex:
             if not self._load_saved():
                 self.build()
         if not self.chunks:
-            return "No local documents found. Add .md, .txt, .py, .json, or .rst files to the docs folder."
+            return "No local documents found. Add .md, .txt, .py, .json, .rst, .pdf, or .docx files to the docs folder."
         try:
             requested_top_k = int(top_k)
         except (TypeError, ValueError):

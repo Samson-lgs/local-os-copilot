@@ -58,7 +58,7 @@ It records average response latency and exact tool-selection accuracy across an 
 
 ## Local RAG
 
-Sam supports retrieval-augmented generation over files in `docs/`. Add `.md`, `.txt`, `.py`, `.json`, or `.rst` files, then ask Sam a question about them. Sam will call `search_documents`, create local embeddings with `nomic-embed-text`, and return the most relevant chunks to the local chat model.
+Sam supports retrieval-augmented generation over files in `docs/`. Add `.md`, `.txt`, `.py`, `.json`, `.rst`, `.pdf`, or `.docx` files, then ask Sam a question about them. Sam will call `search_documents`, extract text locally, create embeddings with `nomic-embed-text`, and return the most relevant chunks to the local chat model.
 
 ```powershell
 mkdir docs
@@ -66,7 +66,7 @@ Copy-Item .\README.md .\docs\project-notes.md
 python -m src.main
 ```
 
-The first document search builds `docs/.sam-index.json`; it is generated locally and ignored by Git. Set `OLLAMA_EMBED_MODEL` or `SAM_DOCUMENTS_DIR` to customize the local embedding model or document directory.
+The first document search builds `docs/.sam-index.json`; it is generated locally and ignored by Git. Set `OLLAMA_EMBED_MODEL` or `SAM_DOCUMENTS_DIR` to customize the local embedding model or document directory. PDF and DOCX parsing happens locally; document contents are never uploaded to a cloud parser.
 
 ## Architecture
 

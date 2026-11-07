@@ -24,6 +24,16 @@ SYSTEM_PROMPT = (
 )
 
 
+def _json_message(message: Any) -> dict[str, Any]:
+    if isinstance(message, dict):
+        return message
+    if hasattr(message, "model_dump"):
+        return message.model_dump(exclude_none=True)
+    if hasattr(message, "dict"):
+        return message.dict(exclude_none=True)
+    return {"role": getattr(message, "role", "assistant"), "content": getattr(message, "content", str(message))}
+
+
 def chat_request(message: str, history: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     validate_local_endpoint()
     client = ollama.Client(host=OLLAMA_HOST)
@@ -38,12 +48,12 @@ def chat_request(message: str, history: list[dict[str, Any]] | None = None) -> d
         messages.append(assistant)
         calls = assistant.get("tool_calls", [])
         if not calls:
-            return {"reply": assistant.get("content", ""), "events": events, "messages": messages[-8:]}
+            return {"reply": assistant.get("content", ""), "events": events, "messages": [_json_message(item) for item in messages[-8:]]}
         for call in calls:
             result = execute_tool(call)
             events.append({"name": result.name, "ok": result.succeeded, "duration_ms": result.duration_ms, "content": result.content})
             messages.append({"role": "tool", "content": result.content})
-    return {"reply": "I stopped after reaching the tool-call limit.", "events": events, "messages": messages[-8:]}
+    return {"reply": "I stopped after reaching the tool-call limit.", "events": events, "messages": [_json_message(item) for item in messages[-8:]]}
 
 
 class SamHandler(BaseHTTPRequestHandler):

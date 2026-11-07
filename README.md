@@ -241,6 +241,7 @@ Sam has a local trust boundary and several execution controls:
 - Tool results include success/failure status and duration.
 - Conversation export is manual and writes only to a user-selected local path.
 - Voice recording and transcription are local and optional.
+- Optional local text-to-speech output is available through Windows speech services.
 - The RAG index can watch the `docs/` folder for changes.
 - The web UI provides a screenshot preview and selectable region OCR.
 - Preferences and approved facts can be stored in local SQLite memory.
@@ -249,6 +250,7 @@ Important limitations:
 
 - `type_text` operates on whichever window currently has focus.
 - Voice input requires a working microphone and downloads the Whisper model locally on first use.
+- Speech output requires a Windows speech voice and `pyttsx3`.
 - The current release does not provide arbitrary shell access.
 - Exported conversations are plain text.
 - Users should review tool activity before allowing desktop actions.
@@ -307,7 +309,7 @@ The benchmark never executes desktop tools or sends data to a remote endpoint.
 
 ## Enhanced JavaScript Frontend
 
-Sam also includes a browser-based local workspace with a modern agent layout, live runtime status, chat, tool trace, screenshot preview, region OCR, voice input, conversation export, and responsive mobile styling.
+Sam also includes a browser-based local workspace with a modern agent layout, live runtime status, chat, tool trace, screenshot preview, region OCR, voice input, local speech output, conversation export, and responsive mobile styling.
 
 Start it with:
 
@@ -370,13 +372,12 @@ Use this short explanation in an interview:
 - Built a privacy-first Windows desktop copilot using local Ollama models, Tkinter, screen OCR, validated OS tools, and bounded function-calling orchestration.
 - Implemented local RAG over Markdown, text, Python, JSON, RST, PDF, and DOCX files using Ollama embeddings, cosine retrieval, persisted indexing, and source citations with PDF page numbers.
 - Designed a shared tool executor with Windows application allowlisting, argument validation, loopback endpoint enforcement, intent-gated tool exposure, execution timing, and bounded conversation history.
-- Added a reproducible local-model benchmark, 30 automated tests, Ruff linting, Windows GitHub Actions CI, and a PyInstaller packaging path.
+- Added a reproducible local-model benchmark, 32 automated tests, Ruff linting, Windows GitHub Actions CI, and a PyInstaller packaging path.
 
 ## Future Work
 
 - Incremental index rebuilds based on file hashes rather than full rebuilds
 - PDF citation links that open directly at the cited page
-- Local text-to-speech output
 - More Windows window-management tools with explicit policy controls
 - Signed installer and release artifacts
 

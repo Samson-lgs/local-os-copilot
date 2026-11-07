@@ -15,6 +15,7 @@ TOOLS_SCHEMA = [
     {"type": "function", "function": {"name": "remember", "description": "Save a user-approved preference or fact in local SQLite memory.", "parameters": {"type": "object", "properties": {"content": {"type": "string"}}, "required": ["content"]}}},
     {"type": "function", "function": {"name": "recall_memory", "description": "Retrieve relevant facts from Sam's local SQLite memory.", "parameters": {"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer", "minimum": 1, "maximum": 10}}}}},
     {"type": "function", "function": {"name": "record_and_transcribe", "description": "Record a short microphone clip and transcribe it locally with Whisper.", "parameters": {"type": "object", "properties": {"seconds": {"type": "integer", "minimum": 1, "maximum": 30}}, "required": []}}},
+    {"type": "function", "function": {"name": "speak_text", "description": "Speak text aloud using the local Windows voice service.", "parameters": {"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]}}},
 ]
 CONFIRMATION_REQUIRED: set[str] = set()
 

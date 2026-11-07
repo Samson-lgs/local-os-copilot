@@ -116,6 +116,17 @@ async function recordVoice() {
   button.classList.remove('recording'); button.textContent = 'Push to talk'; phase('READY');
 }
 
+async function speakLast() {
+  const replies = [...document.querySelectorAll('.message.assistant .message-content')];
+  const text = replies.at(-1)?.textContent;
+  if (!text) return;
+  phase('SPEAKING');
+  const response = await fetch('/api/speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+  const data = await response.json();
+  trace('Speech output', data.result || data.error, !String(data.result || '').startsWith('Error:'));
+  phase('READY');
+}
+
 function exportChat() {
   const text = [...document.querySelectorAll('.message')].map((node) => `${node.querySelector('.message-name').textContent}\n${node.querySelector('.message-content').textContent}`).join('\n\n');
   const blob = new Blob([text], { type: 'text/plain' });
@@ -127,6 +138,7 @@ $('messageInput').addEventListener('keydown', (event) => { if (event.key === 'En
 $('refreshScreen').addEventListener('click', captureScreen);
 $('regionButton').addEventListener('click', ocrSelection);
 $('voiceButton').addEventListener('click', recordVoice);
+$('speakButton').addEventListener('click', speakLast);
 $('screenButton').addEventListener('click', () => { $('messageInput').value = 'Read my screen'; $('messageInput').focus(); });
 $('knowledgeButton').addEventListener('click', () => { $('messageInput').value = 'Search my local documents'; $('messageInput').focus(); });
 $('exportButton').addEventListener('click', exportChat);

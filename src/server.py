@@ -14,6 +14,7 @@ from src.executor import execute_tool
 from src.main import TOOLS_SCHEMA
 from src.memory import recall_memory, remember
 from src.settings import MAX_TOOL_ROUNDS, MODEL, OLLAMA_HOST, should_offer_tools, validate_local_endpoint
+from src.speech import speak_text
 from src.vision import read_screen_region, screenshot_payload
 
 WEB_DIR = Path(__file__).parent.parent / "web"
@@ -98,6 +99,8 @@ class SamHandler(BaseHTTPRequestHandler):
                 action = body.get("action", "recall")
                 result = remember(str(body.get("content", ""))) if action == "remember" else recall_memory(str(body.get("query", "")))
                 self._json({"result": result})
+            elif self.path == "/api/speak":
+                self._json({"result": speak_text(str(body.get("text", "")))})
             else:
                 self._json({"error": "Not found"}, 404)
         except Exception as error:

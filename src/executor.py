@@ -6,6 +6,7 @@ from typing import Any, Callable
 from src.audio import record_and_transcribe
 from src.memory import recall_memory, remember
 from src.rag import search_documents
+from src.speech import speak_text
 from src.tools import open_application, type_text
 from src.vision import read_screen, read_screen_region
 
@@ -27,6 +28,7 @@ AVAILABLE_FUNCTIONS: dict[str, Callable[..., str]] = {
     "remember": remember,
     "recall_memory": recall_memory,
     "record_and_transcribe": record_and_transcribe,
+    "speak_text": speak_text,
 }
 
 

@@ -21,6 +21,7 @@ dependencies = [
     "sounddevice==0.5.2",
     "soundfile==0.13.1",
     "watchdog==6.0.0",
+    "pyttsx3==2.99",
 ]
 
 [project.optional-dependencies]
